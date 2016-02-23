@@ -1,0 +1,15 @@
+{
+  "extends": "defaults",
+  "env": {
+    "browser": true,
+    "es6": true,
+    "commonjs": true,
+    "node": true
+  },
+  "ecmaFeatures": {
+    "modules": true
+  },
+  "globals": {
+    "chrome": true
+  }
+}
