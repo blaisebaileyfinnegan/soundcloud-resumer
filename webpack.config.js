@@ -1,6 +1,5 @@
 var webpack = require('webpack');
 var path = require('path');
-var WebpackErrorNotificationPlugin = require('webpack-error-notification');
 
 module.exports = {
   entry: {
@@ -34,7 +33,6 @@ module.exports = {
           NODE_ENV: '\'' + process.env.NODE_ENV + '\''
         }
       }
-    }),
-    new WebpackErrorNotificationPlugin()
+    })
   ]
 };

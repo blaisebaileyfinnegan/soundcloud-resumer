@@ -1,28 +1,19 @@
+import { getWaveformElement, seek } from './sc';
 
-function getWaveformElement() {
-  return document.querySelector('div.waveform__layer.waveform__scene');
+if (process.env.NODE_ENV !== 'production') {
+  window.seek = function (fraction) {
+    seek(getWaveformElement(), fraction);
+  };
 }
 
-function seek(waveformElement, div)  {
-  const { left, right } = waveformElement.getBoundingClientRect();
-  const clickX = div * (right - left);
-
-  const d = new window.Event('mousedown');
-  d.pageX = left + clickX;
-  d.offsetX = 0;
-  d.offsetY = 0;
-  const u = new window.Event('mouseup');
-
-  waveformElement.dispatchEvent(d);
-  waveformElement.dispatchEvent(u);
-}
-
-window.addEventListener("message", function(event) {
-  const { extension, div } = event.data;
+var handleMessage = function(event) {
+  const { extension, fraction } = event.data;
   if (extension === 'soundcloud-remember-position') {
     var waveformElement = getWaveformElement();
     if (waveformElement) {
-      seek(waveformElement, div)
+      setTimeout(() => seek(waveformElement, fraction), 0);
     }
   }
-}, false);
+};
+
+window.addEventListener('message', handleMessage, false);

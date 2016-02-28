@@ -1,61 +1,60 @@
 import URI from 'urijs';
 import { storePagePosition, loadPagePosition } from './chrome';
+import {
+  getPositionText,
+  getDurationText,
+  getPlayControlsSongLinkElement,
+  parseTimelineTextToSeconds
+} from './sc';
+
 require('file?name=manifest.json!./../manifest.json');
 
-function getPositionText() {
-  return document.querySelector('.playbackTimeline__timePassed > span:last-child').textContent;
+function load(key) {
+  loadPagePosition(key).then(function(pos) {
+    if (pos) {
+      const duration = parseTimelineTextToSeconds(getDurationText());
+      const fraction = pos / duration;
+      if (fraction < 1) {
+        sendSeekMessage(fraction)
+      }
+    }
+  });
 }
 
-function getDurationText() {
-  return document.querySelector('.playbackTimeline__duration > span:last-child').textContent;
+function sendSeekMessage(fraction) {
+  window.postMessage({ extension: 'soundcloud-remember-position', fraction }, '*');
 }
 
-function getPlayControlsSongLinkElement() {
-  return document.querySelector('a.playbackSoundBadge__title.sc-truncate');
+function injectScript(url) {
+  var s = document.createElement('script');
+  s.src = url;
+  (document.head || document.documentElement).appendChild(s);
 }
 
-function parseTextToSeconds(text) {
-  const nums = text.split(':')
-      .map(function(s) {
-        return parseInt(s, 10);
-      });
+injectScript(chrome.extension.getURL('inject.js'));
 
-  let hms;
-  if (nums.length === 2) {
-    const newArr = nums.slice(0);
-    newArr.unshift(0);
-    hms = newArr;
-  } else {
-    hms = nums;
-  }
-
-  const [hours, mins, secs] = hms;
-  return (hours * 60 * 60) + (mins * 60) + secs;
-}
-
-window.setInterval(() => {
+let lastKey;
+function loadOrSave(shouldSave) {
   const controls = getPlayControlsSongLinkElement();
   if (controls) {
     const key = new URI(controls.href).pathname();
-    var seconds = parseTextToSeconds(getPositionText());
-    storePagePosition(key, seconds).then(() => {
-      return loadPagePosition(key);
-    });
-  }
-}, 1000);
+    const seconds = parseTimelineTextToSeconds(getPositionText());
+    const duration = parseTimelineTextToSeconds(getDurationText());
+    const minDuration = 60;
+    if (duration > minDuration) {
+      if (lastKey !== key && seconds < 3) {
+        load(key, controls);
+      } else if (shouldSave) {
+        storePagePosition(key, seconds);
+      }
+    }
 
-const controls = getPlayControlsSongLinkElement();
-if (controls) {
-  const key = new URI(controls.href).pathname();
-  loadPagePosition(key).then(function (pos) {
-    console.log('Last known position was', pos);
-    const duration = parseTextToSeconds(getDurationText());
-    var s = document.createElement('script');
-    s.src = chrome.extension.getURL('inject.js');
-    (document.head || document.documentElement).appendChild(s);
-    s.onload = function () {
-      window.postMessage({extension: 'soundcloud-remember-position', div: pos / duration}, '*');
-      s.parentNode.removeChild(s);
-    };
-  });
+    lastKey = key;
+  } else {
+    lastKey = null;
+  }
 }
+
+loadOrSave(false);
+window.setInterval(loadOrSave.bind(null, true), 1000);
+
