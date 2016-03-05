@@ -11,7 +11,11 @@ var handleMessage = function(event) {
   if (extension === 'soundcloud-remember-position') {
     var waveformElement = getWaveformElement();
     if (waveformElement) {
-      setTimeout(() => seek(waveformElement, fraction), 0);
+      // Dumb way of waiting for page scripts to finish
+      const magicNumber = 2000;
+      setTimeout(() => {
+        seek(waveformElement, fraction);
+      }, magicNumber);
     }
   }
 };
