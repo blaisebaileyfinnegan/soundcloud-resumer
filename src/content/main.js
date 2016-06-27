@@ -15,14 +15,14 @@ function load(key) {
       const duration = parseTimelineTextToSeconds(getDurationText());
       const fraction = pos / duration;
       if (fraction < 1) {
-        sendSeekMessage(fraction)
+        sendSeekMessage({ fraction, pos })
       }
     }
   });
 }
 
-function sendSeekMessage(fraction) {
-  window.postMessage({ extension: 'soundcloud-remember-position', fraction }, '*');
+function sendSeekMessage(opts) {
+  window.postMessage(Object.assign({ extension: 'soundcloud-remember-position' }, opts), '*');
 }
 
 function injectScript(url) {
@@ -42,9 +42,11 @@ function loadOrSave(shouldSave) {
     const duration = parseTimelineTextToSeconds(getDurationText());
     const minDuration = 60;
     if (duration > minDuration) {
-      if (lastKey !== key && seconds < 3) {
+      const isPlayingNewTrack = lastKey !== key;
+      const shouldLoad = seconds < 2;
+      if (isPlayingNewTrack && shouldLoad) {
         load(key, controls);
-      } else if (shouldSave) {
+      } else if (!isPlayingNewTrack && shouldSave) {
         storePagePosition(key, seconds);
       }
     }
@@ -56,5 +58,5 @@ function loadOrSave(shouldSave) {
 }
 
 loadOrSave(false);
-window.setInterval(loadOrSave.bind(null, true), 1000);
+window.setInterval(loadOrSave.bind(null, true), 100);
 

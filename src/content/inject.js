@@ -1,4 +1,11 @@
-import { getWaveformElement, seek } from './sc';
+import { 
+  getWaveformElement,
+  getPositionText,
+  parseTimelineTextToSeconds,
+  seek,
+  gritter
+} from './sc';
+
 
 if (process.env.NODE_ENV !== 'production') {
   window.seek = function (fraction) {
@@ -7,15 +14,22 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 var handleMessage = function(event) {
-  const { extension, fraction } = event.data;
+  const { extension, fraction, pos } = event.data;
   if (extension === 'soundcloud-remember-position') {
     var waveformElement = getWaveformElement();
     if (waveformElement) {
-      // Dumb way of waiting for page scripts to finish
-      const magicNumber = 2000;
-      setTimeout(() => {
-        seek(waveformElement, fraction);
-      }, magicNumber);
+      const magicNumber = 500;
+      const code = () => {
+        const seconds = parseTimelineTextToSeconds(getPositionText());
+        if (seconds < pos) {
+          seek(waveformElement, fraction);
+          setTimeout(code, magicNumber)
+        } else {
+          gritter(pos);
+        }
+      };
+      
+      setTimeout(code, magicNumber);
     }
   }
 };
