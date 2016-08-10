@@ -43,7 +43,7 @@ function loadOrSave(shouldSave) {
     const minDuration = 60;
     if (duration > minDuration) {
       const isPlayingNewTrack = lastKey !== key;
-      const shouldLoad = seconds < 2;
+      const shouldLoad = seconds < 3;
       if (isPlayingNewTrack && shouldLoad) {
         load(key, controls);
       } else if (!isPlayingNewTrack && shouldSave) {
@@ -58,5 +58,5 @@ function loadOrSave(shouldSave) {
 }
 
 loadOrSave(false);
-window.setInterval(loadOrSave.bind(null, true), 100);
+window.setInterval(loadOrSave.bind(null, true), 1000);
 
