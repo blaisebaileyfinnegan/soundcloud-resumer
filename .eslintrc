@@ -11,5 +11,8 @@
   },
   "globals": {
     "chrome": true
+  },
+  "rules": {
+    "no-console": 0
   }
 }

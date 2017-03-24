@@ -14,7 +14,14 @@ function load(key) {
     if (pos) {
       const duration = parseTimelineTextToSeconds(getDurationText());
       const fraction = pos / duration;
-      if (fraction < 1) {
+      const isPositionValid = fraction < 1;
+
+      const timeRemaining = duration - pos;
+      const shouldSeek = timeRemaining > 10;
+
+      console.log(`timeRemaining: ${timeRemaining} shouldSeek: ${shouldSeek}`);
+
+      if (isPositionValid && shouldSeek) {
         sendSeekMessage({ fraction, pos })
       }
     }
@@ -45,8 +52,10 @@ function loadOrSave(shouldSave) {
       const isPlayingNewTrack = lastKey !== key;
       const shouldLoad = seconds < 3;
       if (isPlayingNewTrack && shouldLoad) {
+        console.log("Loading track position (if available)");
         load(key, controls);
       } else if (!isPlayingNewTrack && shouldSave) {
+        console.log(`Saving track position key: ${key} seconds: ${seconds}`);
         storePagePosition(key, seconds);
       }
     }

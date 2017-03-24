@@ -1,6 +1,11 @@
 var webpack = require('webpack');
 var path = require('path');
 
+var isProd = false;
+if (process.env.NODE_ENV == 'production') {
+  isProd = true;
+}
+
 module.exports = {
   entry: {
     content: './src/content/main.js',
@@ -36,3 +41,9 @@ module.exports = {
     })
   ]
 };
+
+if (isProd) {
+  module.exports.module.loaders.unshift(
+    { test: /\.js$/, loader: "strip-loader?strip[]=console.log" }
+  );
+}
