@@ -1,18 +1,18 @@
 {
-  "extends": "defaults",
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "sourceType": "module"
+  },
   "env": {
     "browser": true,
     "es6": true,
     "commonjs": true,
     "node": true
   },
-  "ecmaFeatures": {
-    "modules": true
-  },
   "globals": {
     "chrome": true
   },
   "rules": {
-    "no-console": 0
+    "no-console": "off"
   }
 }

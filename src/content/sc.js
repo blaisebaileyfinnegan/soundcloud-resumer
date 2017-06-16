@@ -7,22 +7,18 @@ export function getDurationText() {
 }
 
 export function getPlayControlsSongLinkElement() {
-  return document.querySelector('a.playbackSoundBadge__title.sc-truncate');
-}
-
-export function isPlaying() {
-  return Boolean(document.querySelector('header.playing'));
+  return document.querySelector('a.playbackSoundBadge__titleLink.sc-truncate');
 }
 
 export function getWaveformElement() {
   return document.querySelector('div.playbackTimeline__progressWrapper');
 }
 
-export function seek(waveformElement, fraction)  {
+export function seek(waveformElement, elapsedNormalized)  {
   const { left, width } = waveformElement.getBoundingClientRect();
 
   const magicNumber = 5;
-  const clientX = left + (width * fraction) + magicNumber;
+  const clientX = left + (width * elapsedNormalized) + magicNumber;
 
   const downEvent = new window.MouseEvent('mousedown', { bubbles: true });
   const upEvent = new window.Event('mouseup');

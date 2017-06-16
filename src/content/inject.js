@@ -6,26 +6,25 @@ import {
   gritter
 } from './sc';
 
-
 if (process.env.NODE_ENV !== 'production') {
-  window.seek = function (fraction) {
+  window.seek = function(fraction) {
     seek(getWaveformElement(), fraction);
   };
 }
 
-var handleMessage = function(event) {
-  const { extension, fraction, pos } = event.data;
+const handleMessage = function(event) {
+  const { extension, elapsedToLoadNormalized, elapsedToLoad } = event.data;
   if (extension === 'soundcloud-remember-position') {
-    var waveformElement = getWaveformElement();
+    const waveformElement = getWaveformElement();
     if (waveformElement) {
       const magicNumber = 500;
       const code = () => {
-        const seconds = parseTimelineTextToSeconds(getPositionText());
-        if (seconds < pos) {
-          seek(waveformElement, fraction);
+        const currentElapsed = parseTimelineTextToSeconds(getPositionText());
+        if (currentElapsed < elapsedToLoad) {
+          seek(waveformElement, elapsedToLoadNormalized);
           setTimeout(code, magicNumber)
         } else {
-          gritter(pos);
+          gritter(elapsedToLoad);
         }
       };
       

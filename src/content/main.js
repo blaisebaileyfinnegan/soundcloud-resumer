@@ -10,19 +10,19 @@ import {
 require('file?name=manifest.json!./../manifest.json');
 
 function load(key) {
-  loadPagePosition(key).then(function(pos) {
-    if (pos) {
+  loadPagePosition(key).then(function(elapsedToLoad) {
+    if (elapsedToLoad) {
       const duration = parseTimelineTextToSeconds(getDurationText());
-      const fraction = pos / duration;
-      const isPositionValid = fraction < 1;
+      const elapsedToLoadNormalized = elapsedToLoad / duration;
+      const isValid = elapsedToLoadNormalized < 1;
 
-      const timeRemaining = duration - pos;
+      const timeRemaining = duration - elapsedToLoad;
       const shouldSeek = timeRemaining > 10;
 
       console.log(`timeRemaining: ${timeRemaining} shouldSeek: ${shouldSeek}`);
 
-      if (isPositionValid && shouldSeek) {
-        sendSeekMessage({ fraction, pos })
+      if (isValid && shouldSeek) {
+        sendSeekMessage({ elapsedToLoadNormalized, elapsedToLoad })
       }
     }
   });
@@ -33,7 +33,7 @@ function sendSeekMessage(opts) {
 }
 
 function injectScript(url) {
-  var s = document.createElement('script');
+  const s = document.createElement('script');
   s.src = url;
   (document.head || document.documentElement).appendChild(s);
 }
@@ -45,18 +45,19 @@ function loadOrSave(shouldSave) {
   const controls = getPlayControlsSongLinkElement();
   if (controls) {
     const key = new URI(controls.href).pathname();
-    const seconds = parseTimelineTextToSeconds(getPositionText());
+    const elapsed = parseTimelineTextToSeconds(getPositionText());
     const duration = parseTimelineTextToSeconds(getDurationText());
     const minDuration = 60;
     if (duration > minDuration) {
       const isPlayingNewTrack = lastKey !== key;
-      const shouldLoad = seconds < 3;
+      const remaining = duration - elapsed;
+      const shouldLoad = elapsed < 3 && remaining > 5;
       if (isPlayingNewTrack && shouldLoad) {
         console.log("Loading track position (if available)");
-        load(key, controls);
+        load(key);
       } else if (!isPlayingNewTrack && shouldSave) {
-        console.log(`Saving track position key: ${key} seconds: ${seconds}`);
-        storePagePosition(key, seconds);
+        console.log(`Saving track position key: ${key} seconds: ${elapsed}`);
+        storePagePosition(key, elapsed);
       }
     }
 
