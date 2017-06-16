@@ -48,7 +48,7 @@ function loadOrSave(shouldSave) {
     const elapsed = parseTimelineTextToSeconds(getPositionText());
     const duration = parseTimelineTextToSeconds(getDurationText());
     const minDuration = 60;
-    if (duration > minDuration) {
+    if (key && duration > minDuration) {
       const isPlayingNewTrack = lastKey !== key;
       const remaining = duration - elapsed;
       const shouldLoad = elapsed < 3 && remaining > 5;
