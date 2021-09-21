@@ -3,18 +3,13 @@
   "name": "Save soundcloud playback position",
   "short_name": "soundcloud-remember-position",
   "description": "Saves your soundcloud playback position to local storage. Continue soundcloud tracks where you left off.",
-  "version": "0.0.6",
-  "permissions": [
-    "activeTab",
-    "storage",
-    "https://soundcloud.com/*"
-  ],
-  "web_accessible_resources": [
-    "inject.js"
-  ],
+  "version": "0.1.0",
+  "permissions": ["activeTab", "storage", "https://soundcloud.com/*"],
   "content_scripts": [
     {
       "matches": ["https://soundcloud.com/*"],
+      "run_at": "document_idle",
+      "all_frames": true,
       "js": ["srp-content.js"]
     }
   ]
