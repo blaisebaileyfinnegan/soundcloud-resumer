@@ -1,6 +1,6 @@
 # soundcloud-resumer
 
-[![Cypress Tests](https://github.com/blaisebaileyfinnegan/soundcloud-resumer/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/blaisebaileyfinnegan/soundcloud-resumer/actions/workflows/main.yml)
+[![Cypress Tests](https://github.com/blaisebaileyfinnegan/soundcloud-resumer/actions/workflows/main.yml/badge.svg)](https://github.com/blaisebaileyfinnegan/soundcloud-resumer/actions/workflows/main.yml)
 
 ## Known issues
 
