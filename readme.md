@@ -1,5 +1,7 @@
-# soundcloud-remember-position
+# soundcloud-resumer
+
+[![Cypress Tests](https://github.com/blaisebaileyfinnegan/soundcloud-resumer/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/blaisebaileyfinnegan/soundcloud-resumer/actions/workflows/main.yml)
 
 ## Known issues
 
-- seeking to the exact position of a track may be slightly inaccurate
+- resuming may be slightly inaccurate (behind the actual position)
